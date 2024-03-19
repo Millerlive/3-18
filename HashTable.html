@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 
+    let res = 'abcNCabcs'.match('abc')
+    // console.log(res,res.input);
+    let arr = [1,2,3]
+    arr.aaa = 123
+    // console.log('arr',arr,arr.aaa,arr[3]);  //arr (3) [1, 2, 3, aaa: 123] 123 undefined
+    </script>
+    <script>
+      /* 
+        哈希算法：把一个字符串通过一个算法生成一个数组或字符串
+        生成的字符串无法获取原字符串
+       */
+      function hashStringToInt(s,tableSize){
+        // 哈希算法 生成唯一的key值
+        // return 'index'
+        // return s[0]  返回首字母  只适用于首字母不同的key
+
+        let hash = 17 //定义一个初始值，数字 生成数字这里可以是任一非0数字
+        // 遍历一字符串进行操作
+        for(let i=0;i<s.length;i++){
+          // 将哈希值*13 并与字符的AscII值相乘
+          hash = (13 * hash * s.charCodeAt(i)) % tableSize
+          // 取余最终确保得到的哈希值在0- length-1 范围内
+          // 乘以13是为了增加哈希算法的随机性，减少冲突概率
+        }
+        return hash
+      }
+      // 哈希表 ：可以存储数据  获取数据    通过下标获取数据
+      class HashTable{
+        table = new Array(3);
+        numItem = 0  ;  //记录元素的个数
+
+        // 改变哈希表的长度
+        resize=()=>{
+          console.log('resize');
+          // 新建一个长度为原哈希表长度2倍的哈希表
+          let newTable = new Array(this.table.length * 2)
+          this.table.forEach((item)=>{
+            // 通过key值生成下标放到newTable里面
+            const index = hashStringToInt(item[0],newTable.length)
+            console.log('index',index,'item[0]',item[0]);
+            newTable[index] = item
+          })
+          console.log('new table',newTable);
+          // 将哈希表更新为新表
+          this.table = newTable
+        }
+        // 存储数据
+        setItem=(key,value)=>{
+          this.numItem++  //元素数量+1
+          let loadFactor = this.numItem/this.table.length
+          console.log('loadFactor',loadFactor);
+          if(loadFactor > 0.8){
+            // 当加入的元素个数超过哈希表的80% 的时候，让哈希表的长度扩大
+            this.resize()
+          }
+          // 自己实现一个哈希算法
+          const idx = hashStringToInt(key,this.table.length)
+          console.log('setItem',idx);
+          // 根据key值生成的index存到table中
+          this.table[idx] =[key,value]
+          console.log('this.table',this.table);
+        }
+        // 获取数据
+        getItem=(key)=>{
+          console.log('getItem',key);
+          // 根据key值生成下标
+          const idx = hashStringToInt(key,this.table.length)
+          // 根据indx获取下标对应的值
+          console.log('this.table[idx] getItem',this.table[idx],idx);   //  this.table[idx]   ['g56', 'bbc']
+          // 如果table中没有该元素时返回null
+          if(!this.table[idx]){
+            return null
+          }
+          // 将value返回
+          return this.table[idx][1]
+        }
+        // 删除数据
+        remove = (key)=>{
+          console.log('remove',this.table);
+          // 根据key值生成下标
+          const idx = hashStringToInt(key,this.table.length)
+          if(!this.table[idx]){
+            // 要删除的元素不存在
+            return false  
+          }
+          // 要删除的元素存在 遍历哈希表找到该元素
+          const a = this.table.splice(idx,1,null)  //arr.splice(开始位置，截取个数) 
+          console.log('remove this.table',this.table,'a',a);
+          this.numItem --
+          return a
+        }
+      }
+      let h = new HashTable()
+      h.setItem('aaa','aaaValue')
+      h.setItem('bbb','bbb')
+      h.setItem('ccc','bbc')
+      h.setItem('g56','bbc')
+      console.log('h.getItem(g56)',h.getItem('g56'));
+      console.log('h.remove(g56)',h.remove('g56'));
+      console.log(h);
+    </script>
+</body>
+</html>
